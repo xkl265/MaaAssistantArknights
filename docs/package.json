@@ -16,7 +16,7 @@
   },
   "scripts": {
     "dev": "vuepress dev .",
-    "build": ": > readme.md | cat 详细介绍.md 常见问题.md 模拟器支持.md 回调消息协议.md 写给萌新的发电全流程.md >> readme.md | vuepress build .",
+    "build": "vuepress build .",
     "lint": "markdownlint \"**/*.md\" --fix"
   }
 }
