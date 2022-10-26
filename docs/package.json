@@ -7,15 +7,15 @@
   "author": "bakashigure <me@shigure.fun>",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@vuepress/plugin-docsearch": "^2.0.0-beta.43",
-    "@vuepress/plugin-search": "^2.0.0-beta.43"
+    "@vuepress/plugin-docsearch": "^2.0.0-beta.53",
+    "@vuepress/plugin-search": "^2.0.0-beta.53"
   },
   "devDependencies": {
     "markdownlint-cli": "^0.32.2",
-    "vuepress": "^2.0.0-beta.43"
+    "vuepress": "^2.0.0-beta.53"
   },
   "scripts": {
-    "dev": ": > readme.md | cat 详细介绍.md 常见问题.md 模拟器支持.md 回调消息协议.md 写给萌新的发电全流程.md >> readme.md | vuepress dev .",
+    "dev": "vuepress dev .",
     "build": ": > readme.md | cat 详细介绍.md 常见问题.md 模拟器支持.md 回调消息协议.md 写给萌新的发电全流程.md >> readme.md | vuepress build .",
     "lint": "markdownlint \"**/*.md\" --fix"
   }
