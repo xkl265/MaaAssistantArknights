@@ -24,10 +24,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using MeoAsstGui.Helper;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Stylet;
 using StyletIoC;
+using Windows.UI.Notifications;
 
 namespace MeoAsstGui
 {
@@ -475,11 +477,75 @@ namespace MeoAsstGui
             Logger.Info("\n");
         }
 
+        public void SendUpdatableToastWithProgress()
+        {
+            // Define a tag (and optionally a group) to uniquely identify the notification, in order update the notification data later;
+            string tag = "MAA";
+            string group = "downloads";
+
+            // Construct the toast content with data bound fields
+            var content = new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
+                .AddText("MAA 下载中")
+                .AddVisualChild(new AdaptiveProgressBar()
+                {
+                    Title = "下载中",
+                    Value = new BindableProgressBarValue("progressValue"),
+                    ValueStringOverride = new BindableString("progressValueString"),
+                    Status = "Downloading...",
+                });
+
+            // Generate the toast notification
+            var toast = new Windows.UI.Notifications.ToastNotification(content.GetXml())
+            {
+                // Assign the tag and group
+                Tag = tag,
+                Group = group,
+
+                // Assign initial NotificationData values
+                // Values must be of type string
+                Data = new NotificationData(),
+            };
+            toast.Data.Values["progressValue"] = "0";
+            toast.Data.Values["progressValueString"] = "0/100";
+            toast.Data.Values["progressStatus"] = "Downloading...";
+
+            // Provide sequence number to prevent out-of-order updates, or assign 0 to indicate "always update"
+            toast.Data.SequenceNumber = 0;
+
+            // Show the toast notification to the user
+            ToastNotificationManager.CreateToastNotifier("Microsoft.Windows.Shell.RunDialog").Show(toast);
+        }
+
+        public void UpdateProgress(int i)
+        {
+            // Construct a NotificationData object;
+            string tag = "MAA";
+            string group = "downloads";
+
+            // Create NotificationData and make sure the sequence number is incremented
+            // since last update, or assign 0 for updating regardless of order
+            var data = new NotificationData
+            {
+                SequenceNumber = 0,
+            };
+
+            // Assign new values
+            // Note that you only need to assign values that changed. In this example
+            // we don't assign progressStatus since we don't need to change it
+            data.Values["progressValue"] = Convert.ToString(i / 100.0);
+            data.Values["progressValueString"] = Convert.ToString(i) + "/100";
+
+            // Update the existing notification's data by using tag/group
+            ToastNotificationManager.CreateToastNotifier("Microsoft.Windows.Shell.RunDialog").Update(data, tag, group);
+        }
+
         /// <summary>
         /// Selects all.
         /// </summary>
         public void SelectedAll()
         {
+            SendUpdatableToastWithProgress();
+
             foreach (var item in TaskItemViewModels)
             {
                 if (item.OriginalName == "AutoRoguelike")
@@ -604,11 +670,16 @@ namespace MeoAsstGui
             }
         }
 
+        static int i = 0;
+
         /// <summary>
         /// Starts.
         /// </summary>
         public async void LinkStart()
         {
+            UpdateProgress(++i);
+            return;
+
             if (Idle == false)
             {
                 return;
